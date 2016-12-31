@@ -1,0 +1,196 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather forcast</title>
+		<script src="{% static "js/jquery-1.11.1.min.js"%}"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js" ></script>
+
+
+    <script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.44/js/bootstrap-datetimepicker.min.js" ></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js" ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.44/css/bootstrap-datetimepicker.css" >
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.44/css/bootstrap-datetimepicker.min.css" >
+   <script type="text/javascript">
+  a={{ chart|safe }};
+
+  var ab = [];
+  for(var i = 0; i<a.length; ++i){
+        //console.log(new Date(a[i]['x']));
+        ab.push({x:new Date(a[i]['x']),y:a[i]['y']});
+
+
+        }
+
+  window.onload = function () {
+
+    var chart = new CanvasJS.Chart("chartContainer",
+    {
+      theme: "theme2",
+      title:{
+        text: "Weather"
+      },
+      animationEnabled: true,
+      axisX: {
+        valueFormatString: "DDD/MMM/YYYY HH:mm TT",
+        interval:1,
+        intervalType: "month"
+      },
+      axisY:{
+        includeZero: false,
+          title:'{{ title|safe }}'
+
+      },
+      data: [
+      {
+        type: "line",
+        //lineThickness: 3,
+        dataPoints:ab
+      }
+
+
+      ]
+    });
+
+chart.render();
+}
+  $(function () {
+            $('#datetimepicker1').datetimepicker();
+                      $('#datetimepicker').datetimepicker();
+
+        });
+</script>
+
+</head>
+<body>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Weather Monitoring</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <form class="navbar-form navbar-left" method="post" action="/web/aa/1/index/">{% csrf_token %}
+        <ul class="nav navbar-nav">
+
+          <select id="station"  name="station" class="form-control">
+            {% for i in station %}
+                <option value={{ i.lat }},{{ i.long }}>{{ i.city }}</option>
+            {% endfor %}
+            </select>
+
+      </ul>
+    <ul class="nav navbar-nav">
+        <select id="wtype" name="wtype" class="form-control">
+          <option value="Temperature">Temperature</option>
+          <option value="Humidity">Humidity</option>
+        </select>
+      </ul>
+
+<div class='input-group date' id='datetimepicker'>
+                    <input id="dfrom" type='text' name="dfrom" class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+
+
+<div class='input-group date' id='datetimepicker1'>
+                    <input id="dto" type='text' name="dto" class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+
+
+        <button id="showweather" type="submit" class="btn btn-default">SHOW WEATHER</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">ADD STATION</button></li>
+
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">ADD STATION</h4>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+          <form  action="http://127.0.0.1:8000/web/add/1/addstation/" method="post" id="cpa-form" >{%  csrf_token %}
+    <div class="col-lg-12">
+
+  <div class="row">
+	  <div class="form-group col-lg-4">
+		  <label for="sel1">Select Country:</label>
+		  <select class="form-control countries" name="country" id="countryId_sel1">
+			<option value="">Select Country</option>
+		  </select>
+		</div>
+        <div class="form-group col-lg-4">
+          <label for="sel12">Select State:</label>
+          <select class="form-control states" name="statecode" id="stateId">
+           <option value="">Select State</option>
+          </select>
+        </div>
+        <div class="form-group col-lg-4">
+          <label for="sel13">Select City:</label>
+          <select class="form-control cities" id="cityId" name="city">
+           <option value="">Select City</option>
+          </select>
+        </div>
+    </div>
+
+
+      <input type="submit" name="submit" id="stationbutton" value="Add Station" class="btn btn-info pull-right">
+    </div>
+  </form>
+              </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+</body>
+
+
+     <!-- Latest compiled and minified CSS -->
+<script>
+</script>
+
+
+{#<!-- Optional theme -->#}
+{#<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">#}
+<!-- Latest compiled and minified JavaScript -->
+
+
+
+
+<script src="{% static "js/location.js"%}"></script>
+
+</html>
